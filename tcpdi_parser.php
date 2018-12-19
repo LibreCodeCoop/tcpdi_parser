@@ -3,7 +3,7 @@
 // File name   : tcpdi_parser.php
 // Version     : 1.1
 // Begin       : 2013-09-25
-// Last Update : 2016-05-03
+// Last Update : 2018-12-19
 // Author      : Paul Nicholls - https://github.com/pauln
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 //
@@ -802,15 +802,16 @@ class tcpdi_parser {
                         $offset += 2;
                     }
                 } else {
-                    // hexadecimal string object
-                    $objtype = PDF_TYPE_HEX;
-                    ++$offset;
-                    // The "Panose" entry in the FontDescriptor Style dict seems to have hex bytes separated by spaces.
-                    if (($char == '<') AND (preg_match('/^([0-9A-Fa-f ]+)[>]/iU', substr($data, $offset), $matches) == 1)) {
-                        $objval = $matches[1];
-                        $offset += strlen($matches[0]);
-                        unset($matches);
-                    }
+                    // hexadecimal string object 
+                    $objtype = PDF_TYPE_HEX; ++$offset; 
+                    // The "Panose" entry in the FontDescriptor Style dict seems to have hex bytes separated by spaces. 
+                    if (($char == '<') AND (preg_match('/^([0-9A-Fa-f ]+)[>]/iU', substr($data, $offset), $matches) == 1)) { 
+                        $objval = $matches[1]; $offset += strlen($matches[0]); 
+                    } else if (($char == '<') AND ($endpos = strpos($this->pdfdata, '>', $offset)) !== FALSE) { 
+                        $objval = substr($data, $offset,$endpos-$offset+1); 
+                        $offset = $endpos + 1; 
+                    } 
+                    unset($matches);
                 }
                 break;
             }
